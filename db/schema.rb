@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150723052743) do
+ActiveRecord::Schema.define(version: 20160420103345) do
 
   create_table "activities", force: true do |t|
     t.integer  "trackable_id"
@@ -30,6 +30,40 @@ ActiveRecord::Schema.define(version: 20150723052743) do
   add_index "activities", ["recipient_id", "recipient_type"], name: "index_activities_on_recipient_id_and_recipient_type"
   add_index "activities", ["trackable_id", "trackable_type"], name: "index_activities_on_trackable_id_and_trackable_type"
 
+  create_table "additions", force: true do |t|
+    t.datetime "purchase_date"
+    t.float    "base_price"
+    t.integer  "user_id"
+    t.integer  "story_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "additions", ["user_id"], name: "index_additions_on_user_id"
+  add_index "additions", ["story_id"], name: "index_additions_on_story_id"
+
+  create_table "administrators", force: true do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "categories", force: true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.text     "icon"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "chapters", id: false, force: true do |t|
+    t.string   "id"
+    t.string   "title"
+    t.text     "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "story_id"
+  end
+
   create_table "comments", force: true do |t|
     t.string   "title",            limit: 50, default: ""
     t.text     "comment"
@@ -45,6 +79,13 @@ ActiveRecord::Schema.define(version: 20150723052743) do
   add_index "comments", ["commentable_id"], name: "index_comments_on_commentable_id"
   add_index "comments", ["commentable_type"], name: "index_comments_on_commentable_type"
   add_index "comments", ["user_id"], name: "index_comments_on_user_id"
+
+  create_table "donations", force: true do |t|
+    t.float    "amount"
+    t.text     "message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "events", force: true do |t|
     t.string   "name"
@@ -73,6 +114,11 @@ ActiveRecord::Schema.define(version: 20150723052743) do
   add_index "follows", ["followable_id", "followable_type"], name: "fk_followables"
   add_index "follows", ["follower_id", "follower_type"], name: "fk_follows"
 
+  create_table "free_users", force: true do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "friendly_id_slugs", force: true do |t|
     t.string   "slug",                      null: false
     t.integer  "sluggable_id",              null: false
@@ -85,6 +131,48 @@ ActiveRecord::Schema.define(version: 20150723052743) do
   add_index "friendly_id_slugs", ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
   add_index "friendly_id_slugs", ["sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_id"
   add_index "friendly_id_slugs", ["sluggable_type"], name: "index_friendly_id_slugs_on_sluggable_type"
+
+  create_table "has_categories", force: true do |t|
+    t.integer  "story_id"
+    t.integer  "category_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "has_categories", ["category_id"], name: "index_has_categories_on_category_id"
+  add_index "has_categories", ["story_id"], name: "index_has_categories_on_story_id"
+
+  create_table "membership_cards", force: true do |t|
+    t.string   "code"
+    t.datetime "expiration"
+    t.float    "premiumMonths"
+    t.text     "message"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.integer  "usage"
+  end
+
+  create_table "options", force: true do |t|
+    t.string   "option"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "payments", force: true do |t|
+    t.float    "amount",     default: 0.0
+    t.string   "token"
+    t.string   "identifier"
+    t.string   "payer_id"
+    t.boolean  "recurring",  default: false
+    t.boolean  "digital",    default: false
+    t.boolean  "popup",      default: false
+    t.boolean  "completed",  default: false
+    t.boolean  "canceled",   default: false
+    t.integer  "good_id"
+    t.string   "good_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "posts", force: true do |t|
     t.text     "content",                     null: false
@@ -100,6 +188,28 @@ ActiveRecord::Schema.define(version: 20150723052743) do
   add_index "posts", ["cached_votes_up"], name: "index_posts_on_cached_votes_up"
   add_index "posts", ["comments_count"], name: "index_posts_on_comments_count"
   add_index "posts", ["user_id"], name: "index_posts_on_user_id"
+
+  create_table "premium_users", force: true do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "expiration"
+  end
+
+  create_table "stories", force: true do |t|
+    t.string   "title"
+    t.string   "description"
+    t.string   "language"
+    t.float    "price"
+    t.date     "release_date"
+    t.boolean  "published"
+    t.integer  "num_purchased"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.integer  "user_id"
+    t.text     "cover"
+  end
+
+  add_index "stories", ["user_id"], name: "index_stories_on_user_id"
 
   create_table "users", force: true do |t|
     t.string   "name",                   default: "",     null: false
@@ -127,6 +237,7 @@ ActiveRecord::Schema.define(version: 20150723052743) do
     t.string   "phone_number"
     t.integer  "posts_count",            default: 0,      null: false
     t.string   "slug"
+    t.string   "user_status"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true

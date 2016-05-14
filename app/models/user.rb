@@ -11,6 +11,11 @@ class User < ActiveRecord::Base
   acts_as_follower
   acts_as_followable
 
+
+  belongs_to :role, polymorphic: true
+  has_many :stories
+  has_many :additions
+
   has_many :posts
   has_many :comments
   has_many :events
