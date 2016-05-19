@@ -205,6 +205,10 @@ ActiveRecord::Schema.define(version: 20160420103345) do
     t.integer  "num_purchased"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
+    t.string   "cover_file_name"
+    t.string   "cover_content_type"
+    t.integer  "cover_file_size"
+    t.datetime "cover_updated_at"
     t.integer  "user_id"
     t.text     "cover"
   end
